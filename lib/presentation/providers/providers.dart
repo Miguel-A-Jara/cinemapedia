@@ -7,3 +7,6 @@ export 'package:cinemapedia/presentation/providers/movies/initial_loading_provid
 // Actors
 export 'package:cinemapedia/presentation/providers/actors/actors_by_movie_provider.dart';
 export 'package:cinemapedia/presentation/providers/actors/actors_repository_provider.dart';
+
+// Searchs
+export 'package:cinemapedia/presentation/providers/searchs/search_movies_provider.dart';

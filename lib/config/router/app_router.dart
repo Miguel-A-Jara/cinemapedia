@@ -6,7 +6,7 @@ import 'package:cinemapedia/presentation/screens/screens.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
-  routes: [
+  routes: <RouteBase>[
     GoRoute(
       path: '/',
       name: HomeScreen.name,
