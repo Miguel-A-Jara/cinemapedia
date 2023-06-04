@@ -1,4 +1,13 @@
+// Third Party
+import 'package:isar/isar.dart';
+
+// Isar
+part 'movie.g.dart';
+
+@collection
 class Movie {
+  Id? isarID;
+
   final bool adult;
   final String backdropPath;
   final List<String> genreIds;
