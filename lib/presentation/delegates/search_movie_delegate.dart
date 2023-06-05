@@ -3,15 +3,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 // Third Party
+import 'package:go_router/go_router.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:cinemapedia/config/helpers/human_formats.dart';
 
 // Project
 import 'package:cinemapedia/domain/entities/movie.dart';
+import 'package:cinemapedia/config/helpers/human_formats.dart';
 
 typedef SearchMoviesCallback = Future<List<Movie>> Function(String query);
 
-class SearchMovieDelegate extends SearchDelegate<Movie?> {
+class SearchMovieDelegate extends SearchDelegate<void> {
   final SearchMoviesCallback searchMovies;
   final List<Movie> initalMovies;
   List<Movie> _foundMovies = [];
@@ -24,11 +25,6 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
   SearchMovieDelegate({required this.initalMovies, required this.searchMovies})
       : super(searchFieldLabel: 'Busca...');
-
-  void clearStreams() {
-    _debouncedMovies.close();
-    _debounceTimer?.cancel();
-  }
 
   void _onQueryChanged(String query) {
     if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
@@ -79,8 +75,10 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   Widget? buildLeading(BuildContext context) {
     return IconButton(
       onPressed: () {
-        clearStreams();
-        close(context, null);
+        _debounceTimer?.cancel();
+        _debouncedMovies.close();
+
+        context.pop();
       },
       icon: const Icon(Icons.arrow_back_ios_new_rounded),
     );
@@ -92,8 +90,9 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
       initMovies: _foundMovies,
       movieStream: _debouncedMovies.stream,
       onMovieSelected: (ctx, movie) {
-        clearStreams();
-        close(ctx, movie);
+        _debounceTimer?.cancel();
+
+        context.push('/movie/${movie.id}');
       },
     );
   }
@@ -106,8 +105,9 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
       initMovies: initalMovies,
       movieStream: _debouncedMovies.stream,
       onMovieSelected: (ctx, movie) {
-        clearStreams();
-        close(ctx, movie);
+        _debounceTimer?.cancel();
+
+        context.push('/movie/${movie.id}');
       },
     );
   }
@@ -126,17 +126,28 @@ class _SearchResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return StreamBuilder(
       initialData: initMovies,
       stream: movieStream,
       builder: (context, snapshot) {
         final movies = snapshot.data ?? [];
 
-        return ListView.builder(
+        return ListView.separated(
           physics: const BouncingScrollPhysics(),
           itemCount: movies.length,
-          itemBuilder: (context, idx) =>
-              _MovieItem(movie: movies[idx], onMovieSelected: onMovieSelected),
+          itemBuilder: (context, idx) => FadeInRight(
+            delay: const Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 500),
+            child: _MovieItem(
+              movie: movies[idx],
+              onMovieSelected: onMovieSelected,
+            ),
+          ),
+          separatorBuilder: (context, index) => Divider(
+            color: colors.primary.withOpacity(0.5),
+          ),
         );
       },
     );
@@ -159,28 +170,27 @@ class _MovieItem extends StatelessWidget {
         onMovieSelected(context, movie);
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Image
-            SizedBox(
-              width: size.width * 0.2,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: Image.network(
-                  movie.posterPath,
-                  loadingBuilder: (context, child, loadingProgress) => FadeIn(
-                    child: child,
-                  ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                fit: BoxFit.cover,
+                width: size.width * 0.25,
+                height: 150,
+                movie.posterPath,
+                loadingBuilder: (context, child, loadingProgress) => FadeIn(
+                  child: child,
                 ),
               ),
             ),
-
-            const Spacer(),
-
             // Description
             SizedBox(
-              width: size.width * 0.7,
+              width: size.width * 0.65,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -188,9 +198,8 @@ class _MovieItem extends StatelessWidget {
                     movie.title,
                     style: textStyles.titleMedium,
                   ),
-                  (movie.overview.length > 100)
-                      ? Text('${movie.overview.substring(0, 100)}...')
-                      : Text(movie.overview),
+                  Text(movie.overview,
+                      maxLines: 3, overflow: TextOverflow.ellipsis),
                   Row(
                     children: [
                       Icon(

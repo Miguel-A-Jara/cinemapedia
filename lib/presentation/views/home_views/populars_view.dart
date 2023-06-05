@@ -9,6 +9,7 @@ import 'package:cinemapedia/presentation/providers/providers.dart';
 import 'package:cinemapedia/presentation/widgets/movies/movie_masonry.dart';
 
 class PopularsView extends ConsumerWidget {
+  static final _scrollController = ScrollController();
   const PopularsView({super.key});
 
   @override
@@ -21,6 +22,7 @@ class PopularsView extends ConsumerWidget {
     }
 
     return MovieMasonry(
+      scrollController: _scrollController,
       loadNextPage: () => popularMoviesRead.loadNextPage(),
       movies: popularMoviesWatch,
     );

@@ -1,13 +1,13 @@
 // Flutter
-import 'package:cinemapedia/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 // Third Party
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Project
+import 'package:cinemapedia/presentation/widgets/widgets.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
-import 'package:go_router/go_router.dart';
 
 class FavoritesView extends ConsumerStatefulWidget {
   const FavoritesView({super.key});
@@ -19,6 +19,7 @@ class FavoritesView extends ConsumerStatefulWidget {
 class FavoritesViewState extends ConsumerState<FavoritesView> {
   bool _isLastPage = false;
   bool _isLoading = false;
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -27,7 +28,7 @@ class FavoritesViewState extends ConsumerState<FavoritesView> {
   }
 
   Future<void> loadNextPage() async {
-    if (_isLoading || _isLastPage) return;
+    if (_isLoading || _isLastPage) {}
     _isLoading = true;
 
     final movies =
@@ -57,6 +58,7 @@ class FavoritesViewState extends ConsumerState<FavoritesView> {
             ),
             Text(
               'Agrega algunas películas para verlas aquí.',
+              textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20, color: colors.secondary),
             ),
             const SizedBox(height: 20),
@@ -69,11 +71,18 @@ class FavoritesViewState extends ConsumerState<FavoritesView> {
       );
     }
 
-    return Scaffold(
-      body: MovieMasonry(
-        movies: favoriteMoviesList,
-        loadNextPage: () => loadNextPage(),
-      ),
+    return Column(
+      children: [
+        AppBar(centerTitle: true, title: const Text('Tus películas favoritas')),
+        Expanded(
+          child: MovieMasonry(
+            isLastPage: _isLastPage,
+            scrollController: _scrollController,
+            movies: favoriteMoviesList,
+            loadNextPage: () => loadNextPage(),
+          ),
+        ),
+      ],
     );
   }
 }

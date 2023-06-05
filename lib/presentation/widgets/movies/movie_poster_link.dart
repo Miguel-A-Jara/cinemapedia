@@ -1,4 +1,5 @@
-// Flutter
+// Flutter & Dart
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 // Third Party
@@ -15,7 +16,10 @@ class MoviePosterLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final random = Random();
+
     return FadeInUp(
+      duration: Duration(milliseconds: random.nextInt(1000) + 200),
       child: GestureDetector(
         onTap: () => context.push('/movie/${movie.id}'),
         child: ClipRRect(

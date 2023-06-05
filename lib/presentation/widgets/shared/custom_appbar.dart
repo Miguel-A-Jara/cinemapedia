@@ -2,11 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// Third Party
-import 'package:go_router/go_router.dart';
-
 // Project
-import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
 import 'package:cinemapedia/presentation/delegates/search_movie_delegate.dart';
 
@@ -19,7 +15,7 @@ class CustomAppbar extends ConsumerWidget {
       final searchMovies = ref.read(searchedMoviesProvider);
       final searchQuery = ref.read(searchQueryProvider);
 
-      final movie = await showSearch<Movie?>(
+      showSearch(
         query: searchQuery,
         context: context,
         delegate: SearchMovieDelegate(
@@ -29,9 +25,9 @@ class CustomAppbar extends ConsumerWidget {
         ),
       );
 
-      if (context.mounted && movie != null) {
-        context.push('/movie/${movie.id}');
-      }
+      // if (context.mounted && movie != null) {
+      //   context.push('/movie/${movie.id}');
+      // }
     }
 
     final colors = Theme.of(context).colorScheme;
