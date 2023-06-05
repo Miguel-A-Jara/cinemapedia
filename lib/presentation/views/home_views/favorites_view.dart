@@ -26,7 +26,7 @@ class FavoritesViewState extends ConsumerState<FavoritesView> {
     loadNextPage();
   }
 
-  void loadNextPage() async {
+  Future<void> loadNextPage() async {
     if (_isLoading || _isLastPage) return;
     _isLoading = true;
 
@@ -72,7 +72,7 @@ class FavoritesViewState extends ConsumerState<FavoritesView> {
     return Scaffold(
       body: MovieMasonry(
         movies: favoriteMoviesList,
-        loadNextPage: loadNextPage,
+        loadNextPage: () => loadNextPage(),
       ),
     );
   }

@@ -12,8 +12,14 @@ final appRouter = GoRouter(
   initialLocation: '/',
   navigatorKey: _rootNavigatorKey,
   routes: [
-    StatefulShellRoute.indexedStack(
-      builder: (_, __, currentChild) => HomeScreen(currentChild: currentChild),
+    StatefulShellRoute(
+      builder: (context, state, navigationShell) => navigationShell,
+      navigatorContainerBuilder: (context, navigationShell, children) {
+        return HomeScreen(
+          navigationShell: navigationShell,
+          children: children,
+        );
+      },
       branches: [
         StatefulShellBranch(
           routes: [
@@ -37,8 +43,8 @@ final appRouter = GoRouter(
         ),
         StatefulShellBranch(routes: [
           GoRoute(
-            path: '/favoritesa',
-            builder: (context, state) => const FavoritesView(),
+            path: '/populars',
+            builder: (context, state) => const PopularsView(),
           ),
         ]),
         StatefulShellBranch(routes: [
@@ -51,22 +57,3 @@ final appRouter = GoRouter(
     ),
   ],
 );
-
-
-// Parent Routes & Child Routes
-    // GoRoute(
-    //   path: '/',
-    //   name: HomeScreen.name,
-    //   builder: (_, __) => const HomeScreen(childView: HomeView()),
-    //   routes: [
-    //     GoRoute(
-    //       path: 'movie/:id',
-    //       name: MovieScreen.name,
-    //       builder: (_, state) {
-    //         final movieID = state.pathParameters['id'] ?? 'no-id';
-
-    //         return MovieScreen(movieID: movieID);
-    //       },
-    //     ),
-    //   ],
-    // ),

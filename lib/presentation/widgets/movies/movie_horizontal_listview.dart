@@ -1,7 +1,7 @@
 // Flutter
 import 'package:flutter/material.dart';
 
-// Libraries
+// Third Party
 import 'package:go_router/go_router.dart';
 import 'package:animate_do/animate_do.dart';
 
@@ -115,66 +115,60 @@ class _Slide extends StatelessWidget {
   Widget build(BuildContext context) {
     final textStyles = Theme.of(context).textTheme;
 
-    return Container(
-      margin: const EdgeInsetsDirectional.symmetric(horizontal: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 150,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.network(
-                movie.posterPath,
-                fit: BoxFit.cover,
-                width: 150,
-                height: 220,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress != null) {
-                    return const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Center(
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    );
-                  }
-                  return GestureDetector(
-                    onTap: () => context.push('/movie/${movie.id}'),
-                    child: FadeIn(child: child),
-                  );
-                },
+    return InkWell(
+      borderRadius: BorderRadius.circular(5),
+      onTap: () => context.push('/movie/${movie.id}'),
+      child: Container(
+        margin:
+            const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 150,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: FadeInImage(
+                  fit: BoxFit.cover,
+                  width: 150,
+                  height: 220,
+                  image: NetworkImage(movie.posterPath),
+                  placeholder:
+                      const AssetImage('assets/loaders/bottle-loader.gif'),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 5),
-          SizedBox(
-            width: 150,
-            child: Text(
-              movie.title,
-              maxLines: 2,
-              style: textStyles.titleSmall,
+            const SizedBox(height: 5),
+            SizedBox(
+              width: 150,
+              child: Text(
+                movie.title,
+                maxLines: 2,
+                style: textStyles.titleSmall,
+              ),
             ),
-          ),
-          SizedBox(
-            width: 150,
-            child: Row(
-              children: [
-                Text(
-                  '${movie.voteAverage}',
-                  style: textStyles.bodyMedium!
-                      .copyWith(color: Colors.yellow.shade800),
-                ),
-                const SizedBox(width: 4),
-                Icon(Icons.star_half_outlined, color: Colors.yellow.shade800),
-                const Spacer(),
-                Text(
-                  HumanFormats.number(movie.popularity),
-                  style: textStyles.bodySmall,
-                ),
-              ],
+            const Spacer(),
+            SizedBox(
+              width: 150,
+              child: Row(
+                children: [
+                  Text(
+                    '${movie.voteAverage}',
+                    style: textStyles.bodyMedium!
+                        .copyWith(color: Colors.yellow.shade800),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(Icons.star_half_outlined, color: Colors.yellow.shade800),
+                  const Spacer(),
+                  Text(
+                    HumanFormats.number(movie.popularity),
+                    style: textStyles.bodySmall,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

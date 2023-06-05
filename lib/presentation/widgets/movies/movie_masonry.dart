@@ -8,7 +8,7 @@ import 'package:cinemapedia/presentation/widgets/widgets.dart';
 
 class MovieMasonry extends StatefulWidget {
   final List<Movie> movies;
-  final VoidCallback? loadNextPage;
+  final Future<void> Function()? loadNextPage;
 
   const MovieMasonry({
     required this.movies,
@@ -27,12 +27,22 @@ class _MovieMasonryState extends State<MovieMasonry> {
   void initState() {
     super.initState();
 
-    _scrollController.addListener(() {
+    _scrollController.addListener(() async {
       final maxScrollHeight = _scrollController.position.maxScrollExtent;
       final currentPosition = _scrollController.position.pixels;
 
       if (currentPosition + 50 >= maxScrollHeight) {
-        if (widget.loadNextPage case final loadNextPage?) loadNextPage();
+        if (widget.loadNextPage case final loadNextPage?) {
+          await loadNextPage();
+          // We await 1 second, so we are sure the user isn't scrolling anymore
+          await Future.delayed(const Duration(seconds: 1));
+
+          _scrollController.animateTo(
+            currentPosition + 200,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+        }
       }
     });
   }

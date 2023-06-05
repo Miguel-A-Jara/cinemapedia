@@ -132,6 +132,7 @@ class _CustomSliverAppbar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final sizes = MediaQuery.of(context).size;
+    final colors = Theme.of(context).colorScheme;
 
     final isFavoriteMovieWatch = ref.watch(isFavoriteMovieProvider(movie.id));
 
@@ -177,11 +178,11 @@ class _CustomSliverAppbar extends ConsumerWidget {
                 },
               ),
             ),
-            const _CustomGradient(
+            _CustomGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              stops: [0.8, 1.0],
-              colors: [Colors.transparent, Colors.black54],
+              stops: const [0.7, 1.0],
+              colors: [Colors.transparent, colors.background],
             ),
             const _CustomGradient(
               begin: Alignment.topRight,

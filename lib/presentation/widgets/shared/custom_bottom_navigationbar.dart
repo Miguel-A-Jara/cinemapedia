@@ -5,27 +5,59 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
-  final StatefulNavigationShell currentChild;
-  const CustomBottomNavigationBar({required this.currentChild, super.key});
+  final StatefulNavigationShell navigationShell;
+  const CustomBottomNavigationBar({required this.navigationShell, super.key});
 
-  Future<bool> handleOnWillPop() async {
-    final location = currentChild.shellRouteContext.routerState.location;
+  Future<bool> handleOnWillPop(BuildContext context) async {
+    final location = navigationShell.shellRouteContext.routerState.location;
 
     if (location != '/') {
-      currentChild.goBranch(0);
+      navigationShell.goBranch(0);
       return false;
     }
 
-    return true;
+    late bool isUserExit;
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('¿Quieres Salir?'),
+          content: const Text('Estás a punto de salir de la Aplicación.'),
+          actions: [
+            FilledButton.tonal(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                isUserExit = false;
+                context.pop();
+              },
+            ),
+            FilledButton(
+              child: const Text('Salir'),
+              onPressed: () {
+                isUserExit = true;
+                context.pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+    return isUserExit;
   }
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return WillPopScope(
-      onWillPop: handleOnWillPop,
+      onWillPop: () => handleOnWillPop(context),
       child: BottomNavigationBar(
-        currentIndex: currentChild.currentIndex,
-        onTap: (idx) => currentChild.goBranch(idx),
+        type: BottomNavigationBarType.shifting,
+        selectedItemColor: colors.primary,
+        unselectedItemColor: colors.primary.withOpacity(0.25),
+        currentIndex: navigationShell.currentIndex,
+        onTap: (idx) => navigationShell.goBranch(idx),
         elevation: 0,
         items: const [
           BottomNavigationBarItem(
@@ -33,8 +65,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
             label: 'Inicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.label_outline),
-            label: 'Categorías',
+            icon: Icon(Icons.thumbs_up_down_outlined),
+            label: 'Populares',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite_outline),
